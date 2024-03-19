@@ -4,7 +4,7 @@
   "description": "Polsource fullstack assignment",
   "main": "src/index.js",
   "scripts": {
-    "test": "cross-env APP_ENV=test nohup nodemon src/index.js && mocha",
+    "test": "cross-env APP_ENV=test nodemon src/index.js",
     "start": "nodemon src/index.js"
   },
   "repository": {
