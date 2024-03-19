@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  frontend:
+    container_name: frontend
+    image: frontend
+    build: 
+      context: notes-ui
+    ports:
+      - '3000:3000'
+    stdin_open: true
+    tty: true
+
+  backend:
+    container_name: backend
+    image: backend
+    build: 
+      context: server
+    ports:
+      - '4006:4006'
