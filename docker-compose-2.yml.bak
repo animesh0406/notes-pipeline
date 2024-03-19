@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  frontend:
+    container_name: frontend
+    image: animesh0406/fullstack-ui:client-latest
+    ports:
+      - '3000:3000'
+    stdin_open: true
+    tty: true
+
+  backend:
+    container_name: backend
+    image: animesh0406/fullstack-back:server-latest
+    ports:
+      - '4006:4006'
