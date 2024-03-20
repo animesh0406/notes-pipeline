@@ -74,25 +74,29 @@ pipeline {
         
         stage('Build Images') {
             steps {
-                // Set the tag number to the build number
-                def clientTag = "animesh0406/fullstack-ui:client-${env.BUILD_NUMBER}"
-                def serverTag = "animesh0406/fullstack-back:server-${env.BUILD_NUMBER}"
+                script {
+                    // Set the tag number to the build number
+                    def clientTag = "animesh0406/fullstack-ui:client-${env.BUILD_NUMBER}"
+                    def serverTag = "animesh0406/fullstack-back:server-${env.BUILD_NUMBER}"
         
-                // Build Docker images with the updated tags
-                sh "docker build -t ${clientTag} notes-ui"
-                sh "docker build -t ${serverTag} server"
+                    // Build Docker images with the updated tags
+                    sh "docker build -t ${clientTag} notes-ui"
+                    sh "docker build -t ${serverTag} server"
+                }
             }
         }
         
         stage('Push Images to DockerHub') {
             steps {
-                def clientTag = "animesh0406/fullstack-ui:client-${env.BUILD_NUMBER}"
-                def serverTag = "animesh0406/fullstack-back:server-${env.BUILD_NUMBER}"
+                script {
+                    def clientTag = "animesh0406/fullstack-ui:client-${env.BUILD_NUMBER}"
+                    def serverTag = "animesh0406/fullstack-back:server-${env.BUILD_NUMBER}"
         
-                withCredentials([usernamePassword(credentialsId: '3bda2239-38ef-4f58-985c-fce764f0f67a', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                    sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
-                    sh "docker push ${clientTag}"
-                    sh "docker push ${serverTag}"
+                    withCredentials([usernamePassword(credentialsId: '3bda2239-38ef-4f58-985c-fce764f0f67a', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+                        sh "docker push ${clientTag}"
+                        sh "docker push ${serverTag}"
+                    }
                 }
             }
         }
