@@ -12,8 +12,8 @@ pipeline {
                 docker {
                     image 'node:10.19.0'
                     args '-u root:root' 
-                    }   
-                }
+                }   
+            }
             steps {
                 dir('notes-ui') {
                     sh 'npm install'
@@ -21,13 +21,14 @@ pipeline {
                 }
             }
         }
+        
         stage('Server Build and Test') {
             agent {
                 docker {
                     image 'node:10.19.0'
                     args '-u root:root' 
-                    }   
-                }
+                }   
+            }
             steps {
                 dir('server') {
                     sh 'npm install'
@@ -36,49 +37,53 @@ pipeline {
                 }
             }
         }
+        
         stage('Lint UI Dockerfile') {
             steps {
-                dir('notes-ui'){
+                dir('notes-ui') {
                     script {
-                    // Run Hadolint to lint Dockerfile and save results to hadolint.txt
+                        // Run Hadolint to lint Dockerfile and save results to hadolint.txt
                         sh 'hadolint Dockerfile > hadolint.txt || true'
                     
-                    // Check if hadolint.txt contains any errors
+                        // Check if hadolint.txt contains any errors
                         def hadolintOutput = readFile('hadolint.txt').trim()
                         if (hadolintOutput) {
                             error "Hadolint detected errors in Dockerfile:\n${hadolintOutput}"
                         }
-                    }                    
+                    }
                 }
             }
         }
+        
         stage('Lint server Dockerfile') {
             steps {
-                dir('server'){
+                dir('server') {
                     script {
-                    // Run Hadolint to lint Dockerfile and save results to hadolint.txt
+                        // Run Hadolint to lint Dockerfile and save results to hadolint.txt
                         sh 'hadolint Dockerfile > hadolint.txt || true'
                     
-                    // Check if hadolint.txt contains any errors
+                        // Check if hadolint.txt contains any errors
                         def hadolintOutput = readFile('hadolint.txt').trim()
                         if (hadolintOutput) {
                             error "Hadolint detected errors in Dockerfile:\n${hadolintOutput}"
                         }
-                    }                    
+                    }
                 }
             }
         }
+        
         stage('Build Images') {
             steps {
-        // Set the tag number to the build number
+                // Set the tag number to the build number
                 def clientTag = "animesh0406/fullstack-ui:client-${env.BUILD_NUMBER}"
                 def serverTag = "animesh0406/fullstack-back:server-${env.BUILD_NUMBER}"
         
-        // Build Docker images with the updated tags
+                // Build Docker images with the updated tags
                 sh "docker build -t ${clientTag} notes-ui"
                 sh "docker build -t ${serverTag} server"
             }
         }
+        
         stage('Push Images to DockerHub') {
             steps {
                 def clientTag = "animesh0406/fullstack-ui:client-${env.BUILD_NUMBER}"
@@ -94,10 +99,10 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                 sshagent (credentials: ['65014a8d-40ba-42db-9700-e803d02948a0']){
+                sshagent (credentials: ['65014a8d-40ba-42db-9700-e803d02948a0']){
                     sh "scp -o StrictHostKeyChecking=no -r docker-compose.yml root@192.168.70.80:/root/"
                     sh "ssh -vvv -o StrictHostKeyChecking=no -T root@192.168.70.80 docker compose up -d"
-                 }
+                }
             }
         }
     }
