@@ -78,8 +78,8 @@ pipeline {
             steps {
                 script {
                     // Set the tag number to the build number
-                    def clientTag = "animesh0406/todo-ui:client-${env.BUILD_NUMBER}"
-                    def serverTag = "animesh0406/todo-back:server-${env.BUILD_NUMBER}"
+                    def clientTag = "animesh0406/fullstack-ui:client-${env.BUILD_NUMBER}"
+                    def serverTag = "animesh0406/fullstack-back:server-${env.BUILD_NUMBER}"
         
                     // Build Docker images with the updated tags
                     sh "docker build -t ${clientTag} notes-ui"
@@ -91,8 +91,8 @@ pipeline {
         stage('Push Images to DockerHub') {
             steps {
                 script {
-                    def clientTag = "animesh0406/todo-ui:client-${env.BUILD_NUMBER}"
-                    def serverTag = "animesh0406/todo-back:server-${env.BUILD_NUMBER}"
+                    def clientTag = "animesh0406/fullstack-ui:client-${env.BUILD_NUMBER}"
+                    def serverTag = "animesh0406/fullstack-back:server-${env.BUILD_NUMBER}"
         
                     withCredentials([usernamePassword(credentialsId: 'your-credentials-id', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                         sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"

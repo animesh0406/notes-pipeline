@@ -3,7 +3,7 @@ version: '3.8'
 services:
   frontend:
     container_name: frontend
-    image: animesh0406/todo-ui:client-1
+    image: animesh0406/fullstack-ui:client-2
     ports:
       - '3000:3000'
     stdin_open: true
@@ -11,6 +11,6 @@ services:
 
   backend:
     container_name: backend
-    image: animesh0406/todo-back:server-1
+    image: animesh0406/fullstack-back:server-2
     ports:
       - '4006:4006'
