@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+    stages {
+        stage('Filter Webhook Payload') {
+            when {
+                expression {
+                    def webhookPayload = JSON.parse(env.BUILD_JSON)
+                    def repositoryUrl = webhookPayload.repository.url
+                    def branchName = webhookPayload.ref.split('/').last()
+                    return repositoryUrl == 'https://github.com/animesh0406/notes-pipeline.git' && (branchName == 'main' || branchName == 'UAT' || branchName == 'dev')
+                }
+            }
+            steps {
+                // Trigger job2 if branch is UAT
+                if (branchName == 'UAT') {
+                    build job: 'job2', wait: false
+                }
+                // Trigger job3 if branch is dev
+                else if (branchName == 'dev') {
+                    build job: 'job3', wait: false
+                }
+                // Trigger job1 if branch is main
+                else {
+                    build job: 'job1', wait: false
+                }
+            }
+        }
+    }
+}
