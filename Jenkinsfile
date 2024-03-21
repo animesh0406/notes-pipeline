@@ -94,7 +94,7 @@ pipeline {
                     def clientTag = "animesh0406/todo-ui:client-${env.BUILD_NUMBER}"
                     def serverTag = "animesh0406/todo-back:server-${env.BUILD_NUMBER}"
         
-                    withCredentials([usernamePassword(credentialsId: 'your-credentials-id', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                    withCredentials([usernamePassword(credentialsId: '3bda2239-38ef-4f58-985c-fce764f0f67a', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                         sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
                         sh "docker push ${clientTag}"
                         sh "docker push ${serverTag}"
@@ -105,7 +105,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sshagent (credentials: ['your-ssh-credentials-id']){
+                sshagent (credentials: ['65014a8d-40ba-42db-9700-e803d02948a0']){
                     sh "scp -o StrictHostKeyChecking=no -r docker-compose.yml root@192.168.70.80:/root/"
                     sh "ssh -o StrictHostKeyChecking=no -T root@192.168.70.80 'docker-compose up -d'"
                 }
