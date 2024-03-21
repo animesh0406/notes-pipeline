@@ -37,41 +37,39 @@ pipeline {
                 }
             }
         }
-        stage('Run linting tests'){
-            parallel{
-                stage('Lint UI Dockerfile') {
-                    steps {
-                        dir('notes-ui') {
-                            script {
-                                // Run Hadolint to lint Dockerfile and save results to hadolint.txt
-                                sh 'hadolint Dockerfile > hadolint.txt || true'
-                            
-                                // Check if hadolint.txt contains any errors
-                                def hadolintOutput = readFile('hadolint.txt').trim()
-                                if (hadolintOutput) {
-                                    error "Hadolint detected errors in Dockerfile:\n${hadolintOutput}"
-                                }
-                            }
-                        }
-                    }
-                } // Added missing bracket
-                stage('Lint server Dockerfile') {
-                    steps {
-                        dir('server') {
-                            script {
-                                // Run Hadolint to lint Dockerfile and save results to hadolint.txt
-                                sh 'hadolint Dockerfile > hadolint.txt || true'
-                            
-                                // Check if hadolint.txt contains any errors
-                                def hadolintOutput = readFile('hadolint.txt').trim()
-                                if (hadolintOutput) {
-                                    error "Hadolint detected errors in Dockerfile:\n${hadolintOutput}"
-                                }
-                            }
+        
+        stage('Lint UI Dockerfile') {
+            steps {
+                dir('notes-ui') {
+                    script {
+                        // Run Hadolint to lint Dockerfile and save results to hadolint.txt
+                        sh 'hadolint Dockerfile > hadolint.txt || true'
+                    
+                        // Check if hadolint.txt contains any errors
+                        def hadolintOutput = readFile('hadolint.txt').trim()
+                        if (hadolintOutput) {
+                            error "Hadolint detected errors in Dockerfile:\n${hadolintOutput}"
                         }
                     }
                 }
-            } // Closed parallel block
+            }
+        }
+        
+        stage('Lint server Dockerfile') {
+            steps {
+                dir('server') {
+                    script {
+                        // Run Hadolint to lint Dockerfile and save results to hadolint.txt
+                        sh 'hadolint Dockerfile > hadolint.txt || true'
+                    
+                        // Check if hadolint.txt contains any errors
+                        def hadolintOutput = readFile('hadolint.txt').trim()
+                        if (hadolintOutput) {
+                            error "Hadolint detected errors in Dockerfile:\n${hadolintOutput}"
+                        }
+                    }
+                }
+            }
         }
         
         stage('Build Images') {
@@ -94,7 +92,7 @@ pipeline {
                     def clientTag = "animesh0406/fullstack-ui:client-${env.BUILD_NUMBER}"
                     def serverTag = "animesh0406/fullstack-back:server-${env.BUILD_NUMBER}"
         
-                    withCredentials([usernamePassword(credentialsId: 'your-credentials-id', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                    withCredentials([usernamePassword(credentialsId: '3bda2239-38ef-4f58-985c-fce764f0f67a', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                         sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
                         sh "docker push ${clientTag}"
                         sh "docker push ${serverTag}"
@@ -105,9 +103,9 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sshagent (credentials: ['your-ssh-credentials-id']){
+                sshagent (credentials: ['65014a8d-40ba-42db-9700-e803d02948a0']){
                     sh "scp -o StrictHostKeyChecking=no -r docker-compose.yml root@192.168.70.80:/root/"
-                    sh "ssh -o StrictHostKeyChecking=no -T root@192.168.70.80 'docker-compose up -d'"
+                    sh "ssh -vvv -o StrictHostKeyChecking=no -T root@192.168.70.80 docker compose up -d"
                 }
             }
         }
